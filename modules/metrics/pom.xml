@@ -24,16 +24,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>motech-platform-server-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.ryantenney.metrics</groupId>
-            <artifactId>metrics-spring</artifactId>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-healthchecks</artifactId>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-healthchecks</artifactId>
+            <artifactId>metrics-annotation</artifactId>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
@@ -63,6 +68,10 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>com.springsource.org.jdom</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -74,11 +83,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Context-Path>metrics</Context-Path>
+                        <Context-Path>metrics/api</Context-Path>
                         <Resource-Path>metrics/resources</Resource-Path>
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
-                            org.motechproject.metrics.model;version=${project.version},
+                            org.motechproject.metrics.api;version=${project.version},
                             org.motechproject.metrics.service;version=${project.version}
                         </Export-Package>
                         <Bundle-DocURL>
