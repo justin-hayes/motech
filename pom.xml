@@ -51,6 +51,8 @@
         <scm.connection>scm:git:https://github.com/motech/motech.git</scm.connection>
         <scm.developerConnection>scm:git:https://github.com/motech/motech.git</scm.developerConnection>
         <scm.url>https://github.com/motech/motech.git</scm.url>
+
+        <metrics.version>3.1.2</metrics.version>
     </properties>
 
     <dependencies>
@@ -1067,37 +1069,32 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
-                <version>3.1.2</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-annotation</artifactId>
-                <version>3.1.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ryantenney.metrics</groupId>
-                <artifactId>metrics-spring</artifactId>
-                <version>3.1.1-SNAPSHOT</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-healthchecks</artifactId>
-                <version>3.1.2</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-json</artifactId>
-                <version>3.1.2</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jvm</artifactId>
-                <version>3.1.2</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-graphite</artifactId>
-                <version>3.1.2</version>
+                <version>${metrics.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netflix.hystrix</groupId>
@@ -1118,11 +1115,6 @@
                 <groupId>org.jdom</groupId>
                 <artifactId>com.springsource.org.jdom</artifactId>
                 <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jopt-simple</groupId>
-                <artifactId>org.motechproject.net.sf.jopt-simple</artifactId>
-                <version>4.9</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

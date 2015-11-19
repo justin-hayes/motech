@@ -1,25 +1,19 @@
 package org.motechproject.metrics.service;
 
-import org.motechproject.metrics.model.MeteredRate;
-import org.motechproject.metrics.model.MetricType;
+import org.motechproject.metrics.api.Counter;
+import org.motechproject.metrics.api.Gauge;
+import org.motechproject.metrics.api.Histogram;
+import org.motechproject.metrics.api.Meter;
+import org.motechproject.metrics.api.Timer;
 
-import java.util.SortedSet;
+import java.util.function.Supplier;
 
 public interface MetricRegistryService {
-    boolean remove(String name);
-    SortedSet<String> getNames();
-
-    void initializeMetric(String name, MetricType type);
-
-    void incrementCounter(String counterName);
-    void incrementCounter(String counterName, long incrementValue);
-    void decrementCounter(String counterName);
-    void decrementCounter(String counterName, long decrementValue);
-    void markMeter(String meterName);
-    void markMeter(String meterName, long markValue);
-    void updateHistogram(String histogramName, int updateValue);
-    void updateHistogram(String histogramName, long updateValue);
-
-    void registerMeteredRatioGauge(String gaugeName, String numeratorName, MetricType numeratorType, String denominatorName, MetricType denominatorType, MeteredRate meteredRate);
-    void registerCountedRatioGauge(String gaugeName, String numeratorName, MetricType numeratorType, String denominatorName, MetricType denominatorType);
+    Counter counter(final String name);
+    Histogram histogram(final String name);
+    Meter meter(final String name);
+    Timer timer(final String name);
+    <T> Gauge<T> registerGauge(final String name, final Gauge<T> gauge);
+    <T extends Number> Gauge<Double> registerRatioGauge(final String name, Supplier<T> numerator, Supplier<T> denominator);
+    boolean isRegistered(String name);
 }
