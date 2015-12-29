@@ -88,6 +88,7 @@
                         <Blueprint-Enabled>true</Blueprint-Enabled>
                         <Export-Package>
                             org.motechproject.metrics.api;version=${project.version},
+                            org.motechproject.metrics.builder;version=${project.version},
                             org.motechproject.metrics.service;version=${project.version}
                         </Export-Package>
                         <Bundle-DocURL>

@@ -1,13 +1,7 @@
 package org.motechproject.metrics.web;
 
-import com.codahale.metrics.Counting;
-import com.codahale.metrics.Metered;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
-import org.motechproject.metrics.exception.MetricNotFoundException;
 import org.motechproject.metrics.web.dto.MetricsDto;
-import org.motechproject.metrics.web.dto.MetricDto;
 import org.motechproject.metrics.web.dto.MetricType;
 import org.motechproject.metrics.web.dto.RatioGaugeDto;
 import org.motechproject.metrics.service.MetricRegistryService;
@@ -23,7 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static org.motechproject.metrics.web.MetricDtoToSupplierHelper.getSupplier;
 
 @Controller
 public class MetricsController {
@@ -53,114 +48,12 @@ public class MetricsController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/metrics/ratioGauge", method = RequestMethod.POST)
     public void createRatioGauge(@RequestBody RatioGaugeDto dto) {
-        metricRegistryService.registerRatioGauge(dto.getName(), getSupplier(dto.getNumerator()), getSupplier(dto.getDenominator()));
+        metricRegistryService.registerRatioGauge(dto.getName(),
+                getSupplier(metricRegistry, dto.getNumerator()),
+                getSupplier(metricRegistry, dto.getDenominator()));
     }
 
-    private Supplier<Number> getSupplier(MetricDto dto) {
-        Metric metric = getMetric(dto);
-        Supplier<Number> ret;
 
-        switch (dto.getValue()) {
-            case COUNT:
-                ret = new Supplier<Number>() {
-                    @Override
-                    public Long get() {
-                        return ((Counting) metric).getCount();
-                    }
-                };
-                break;
-            case MEAN:
-                ret = new Supplier<Number>() {
-                    @Override
-                    public Double get() {
-                        return ((Metered) metric).getMeanRate();
-                    }
-                };
-                break;
-            case ONE_MINUTE:
-                ret = new Supplier<Number>() {
-                    @Override
-                    public Double get() {
-                        return ((Metered) metric).getOneMinuteRate();
-                    }
-                };
-                break;
-            case FIVE_MINUTE:
-                ret = new Supplier<Number>() {
-                    @Override
-                    public Double get() {
-                        return ((Metered) metric).getFiveMinuteRate();
-                    }
-                };
-                break;
-            case FIFTEEN_MINUTE:
-                ret = new Supplier<Number>() {
-                    @Override
-                    public Double get() {
-                        return ((Metered) metric).getFifteenMinuteRate();
-                    }
-                };
-                break;
-            default:
-                ret = null;
-                break;
-        }
-
-        return ret;
-    }
-
-    private Metric getMetric(MetricDto dto) {
-        Metric ret = null;
-
-        switch (dto.getType()) {
-            case COUNTER:
-                ret = metricRegistry.getCounters(new MetricFilter() {
-                    @Override
-                    public boolean matches(String name, Metric metric) {
-                        return name.equals(dto.getName());
-                    }
-                }).get(dto.getName());
-                break;
-            case GAUGE:
-                ret = metricRegistry.getGauges(new MetricFilter() {
-                    @Override
-                    public boolean matches(String name, Metric metric) {
-                        return name.equals(dto.getName());
-                    }
-                }).get(dto.getName());
-            case HISTOGRAM:
-                ret = metricRegistry.getHistograms(new MetricFilter() {
-                    @Override
-                    public boolean matches(String name, Metric metric) {
-                        return name.equals(dto.getName());
-                    }
-                }).get(dto.getName());
-                break;
-            case METER:
-                ret = metricRegistry.getMeters(new MetricFilter() {
-                    @Override
-                    public boolean matches(String name, Metric metric) {
-                        return name.equals(dto.getName());
-                    }
-                }).get(dto.getName());
-                break;
-            case TIMER:
-                ret = metricRegistry.getTimers(new MetricFilter() {
-                    @Override
-                    public boolean matches(String name, Metric metric) {
-                        return name.equals(dto.getName());
-                    }
-                }).get(dto.getName());
-                break;
-        }
-
-        if (ret == null) {
-            String msg = String.format("Unable to find metric of type %s with name: %s", dto.getType(), dto.getName());
-            throw new MetricNotFoundException(msg);
-        }
-
-        return ret;
-    }
 
 }
 

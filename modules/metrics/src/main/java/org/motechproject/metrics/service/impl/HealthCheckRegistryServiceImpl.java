@@ -1,14 +1,12 @@
 package org.motechproject.metrics.service.impl;
 
-import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import org.motechproject.metrics.api.HealthCheck;
 import org.motechproject.metrics.service.HealthCheckRegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.concurrent.ExecutorService;
 
 @Service("healthCheckRegistryService")
 public class HealthCheckRegistryServiceImpl implements HealthCheckRegistryService {
@@ -21,7 +19,20 @@ public class HealthCheckRegistryServiceImpl implements HealthCheckRegistryServic
 
     @Override
     public void register(String name, HealthCheck healthCheck) {
-        healthCheckRegistry.register(name, healthCheck);
+        healthCheckRegistry.register(name, new com.codahale.metrics.health.HealthCheck() {
+            @Override
+            @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+            protected Result check() throws Exception {
+                HealthCheck.Result wrapped = healthCheck.check();
+                com.codahale.metrics.health.HealthCheck.Result result;
+                if (wrapped.isHealthy()) {
+                    result = com.codahale.metrics.health.HealthCheck.Result.healthy();
+                } else {
+                    result = com.codahale.metrics.health.HealthCheck.Result.unhealthy(wrapped.getMessage());
+                }
+                return result;
+            }
+        });
     }
 
     @Override
@@ -32,20 +43,5 @@ public class HealthCheckRegistryServiceImpl implements HealthCheckRegistryServic
     @Override
     public SortedSet<String> getNames() {
         return healthCheckRegistry.getNames();
-    }
-
-    @Override
-    public HealthCheck.Result runHealthCheck(String name) {
-        return healthCheckRegistry.runHealthCheck(name);
-    }
-
-    @Override
-    public SortedMap<String, HealthCheck.Result> runHealthChecks() {
-        return healthCheckRegistry.runHealthChecks();
-    }
-
-    @Override
-    public SortedMap<String, HealthCheck.Result> runHealthChecks(ExecutorService executorService) {
-        return healthCheckRegistry.runHealthChecks(executorService);
     }
 }
