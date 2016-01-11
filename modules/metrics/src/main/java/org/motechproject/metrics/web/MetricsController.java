@@ -52,8 +52,5 @@ public class MetricsController {
                 getSupplier(metricRegistry, dto.getNumerator()),
                 getSupplier(metricRegistry, dto.getDenominator()));
     }
-
-
-
 }
 
