@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
+import org.motechproject.metrics.api.Meter;
+import org.motechproject.metrics.service.MetricRegistryService;
 import org.motechproject.tasks.domain.Task;
 import org.motechproject.tasks.domain.TaskActionInformation;
 import org.motechproject.tasks.domain.TaskTriggerInformation;
@@ -35,6 +37,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.apache.commons.lang.CharEncoding.UTF_8;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -73,6 +76,12 @@ public class TaskControllerTest {
     @Mock
     Task task;
 
+    @Mock
+    MetricRegistryService metricRegistryService;
+
+    @Mock
+    Meter meter;
+
     TaskActionExecutor taskActionExecutor;
 
     TriggerHandler triggerHandler;
@@ -80,8 +89,9 @@ public class TaskControllerTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
+        when(metricRegistryService.meter(anyString())).thenReturn(meter);
         taskActionExecutor = new TaskActionExecutor(taskService, null, null);
-        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
+        triggerHandler = new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, metricRegistryService, null);
     }
 
     @Test

@@ -23,14 +23,7 @@ public class HealthCheckRegistryServiceImpl implements HealthCheckRegistryServic
             @Override
             @SuppressWarnings("PMD.SignatureDeclareThrowsException")
             protected Result check() throws Exception {
-                HealthCheck.Result wrapped = healthCheck.check();
-                com.codahale.metrics.health.HealthCheck.Result result;
-                if (wrapped.isHealthy()) {
-                    result = com.codahale.metrics.health.HealthCheck.Result.healthy();
-                } else {
-                    result = com.codahale.metrics.health.HealthCheck.Result.unhealthy(wrapped.getMessage());
-                }
-                return result;
+                return convertToCodaHaleResult(healthCheck.check());
             }
         });
     }
@@ -43,5 +36,25 @@ public class HealthCheckRegistryServiceImpl implements HealthCheckRegistryServic
     @Override
     public SortedSet<String> getNames() {
         return healthCheckRegistry.getNames();
+    }
+
+    private com.codahale.metrics.health.HealthCheck.Result convertToCodaHaleResult(HealthCheck.Result result) {
+        com.codahale.metrics.health.HealthCheck.Result codaResult;
+        String message = result.getMessage();
+        if (result.isHealthy()) {
+            if (message != null) {
+                codaResult = com.codahale.metrics.health.HealthCheck.Result.healthy(message);
+            } else {
+                codaResult = com.codahale.metrics.health.HealthCheck.Result.healthy();
+            }
+        } else {
+            Throwable error = result.getError();
+            if (error != null) {
+                codaResult = com.codahale.metrics.health.HealthCheck.Result.unhealthy(error);
+            } else {
+                codaResult = com.codahale.metrics.health.HealthCheck.Result.unhealthy(message);
+            }
+        }
+        return codaResult;
     }
 }

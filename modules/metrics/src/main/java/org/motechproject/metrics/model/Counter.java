@@ -2,7 +2,7 @@ package org.motechproject.metrics.model;
 
 import org.motechproject.metrics.service.MetricsConfigService;
 
-public class Counter implements org.motechproject.metrics.api.Counter{
+public class Counter implements org.motechproject.metrics.api.Counter {
     private final com.codahale.metrics.Counter counter;
     private final MetricsConfigService metricsConfigService;
 

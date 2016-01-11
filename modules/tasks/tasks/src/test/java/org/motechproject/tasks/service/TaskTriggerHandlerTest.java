@@ -16,6 +16,8 @@ import org.motechproject.event.listener.EventListener;
 import org.motechproject.event.listener.EventListenerRegistryService;
 import org.motechproject.event.listener.EventRelay;
 import org.motechproject.event.listener.annotations.MotechListenerEventProxy;
+import org.motechproject.metrics.api.Meter;
+import org.motechproject.metrics.service.MetricRegistryService;
 import org.motechproject.server.config.SettingsFacade;
 import org.motechproject.tasks.domain.ActionEventBuilder;
 import org.motechproject.tasks.domain.ActionParameterBuilder;
@@ -153,6 +155,12 @@ public class TaskTriggerHandlerTest {
     @Mock
     Exception exception;
 
+    @Mock
+    MetricRegistryService metricRegistryService;
+
+    @Mock
+    Meter meter;
+
     TaskActionExecutor taskActionExecutor;
 
     TaskTriggerHandler handler;
@@ -172,9 +180,10 @@ public class TaskTriggerHandlerTest {
         when(taskService.getAllTasks()).thenReturn(tasks);
         when(settingsFacade.getProperty("task.possible.errors")).thenReturn("5");
         when(dataProvider.getName()).thenReturn(TASK_DATA_PROVIDER_NAME);
+        when(metricRegistryService.meter(anyString())).thenReturn(meter);
 
         taskActionExecutor = new TaskActionExecutor(taskService, taskActivityService, eventRelay);
-        handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, taskActionExecutor, settingsFacade);
+        handler = new TaskTriggerHandler(taskService, taskActivityService, registryService, eventRelay, taskActionExecutor, metricRegistryService, settingsFacade);
         handler.addDataProvider(dataProvider);
         handler.setBundleContext(null);
 
@@ -188,7 +197,7 @@ public class TaskTriggerHandlerTest {
 
         when(taskService.getAllTasks()).thenReturn(new ArrayList<Task>());
 
-        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, null);
+        new TaskTriggerHandler(taskService, null, eventListenerRegistryService, null, taskActionExecutor, metricRegistryService, null);
         verify(eventListenerRegistryService, never()).registerListener(any(EventListener.class), anyString());
     }
 
