@@ -7,12 +7,22 @@ import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import org.motechproject.metrics.exception.MetricNotFoundException;
 import org.motechproject.metrics.web.dto.MetricDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
 
-public final class MetricDtoToSupplierHelper {
-    public static Supplier<Number> getSupplier(MetricRegistry metricRegistry, MetricDto dto) {
-        Metric metric = getMetric(metricRegistry, dto);
+@Component
+public class MetricDtoToSupplierConverter {
+    private MetricRegistry metricRegistry;
+
+    @Autowired
+    public MetricDtoToSupplierConverter(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    public Supplier<Number> convert(MetricDto dto) {
+        Metric metric = getMetric(dto);
         Supplier<Number> ret;
 
         switch (dto.getValue()) {
@@ -64,7 +74,7 @@ public final class MetricDtoToSupplierHelper {
         return ret;
     }
 
-    private static Metric getMetric(MetricRegistry metricRegistry, MetricDto dto) {
+    private Metric getMetric(MetricDto dto) {
         Metric ret = null;
 
         switch (dto.getType()) {
@@ -117,5 +127,5 @@ public final class MetricDtoToSupplierHelper {
         return ret;
     }
 
-    private MetricDtoToSupplierHelper() {}
+    private MetricDtoToSupplierConverter() {}
 }

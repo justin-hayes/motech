@@ -17,18 +17,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.motechproject.metrics.web.MetricDtoToSupplierHelper.getSupplier;
+import java.util.TreeSet;
 
 @Controller
 public class MetricsController {
     private final MetricRegistry metricRegistry;
     private final MetricRegistryService metricRegistryService;
+    private final MetricDtoToSupplierConverter converter;
 
     @Autowired
-    public MetricsController(MetricRegistry metricRegistry, MetricRegistryService metricRegistryService) {
+    public MetricsController(MetricRegistry metricRegistry,
+                             MetricRegistryService metricRegistryService,
+                             MetricDtoToSupplierConverter converter) {
         this.metricRegistry = metricRegistry;
         this.metricRegistryService = metricRegistryService;
+        this.converter = converter;
     }
 
     @RequestMapping(value = "/metrics", method = RequestMethod.GET)
@@ -36,11 +39,11 @@ public class MetricsController {
     public List<MetricsDto> getMetrics() {
         List<MetricsDto> ret = new ArrayList<>();
 
-        ret.add(new MetricsDto(MetricType.COUNTER, new ArrayList<String>(metricRegistry.getCounters().keySet()), new RatioGaugeValue[]{RatioGaugeValue.COUNT}));
-        ret.add(new MetricsDto(MetricType.GAUGE, new ArrayList<String>(metricRegistry.getGauges().keySet()), RatioGaugeValue.values()));
-        ret.add(new MetricsDto(MetricType.HISTOGRAM, new ArrayList<String>(metricRegistry.getHistograms().keySet()), RatioGaugeValue.values()));
-        ret.add(new MetricsDto(MetricType.METER, new ArrayList<String>(metricRegistry.getMeters().keySet()), RatioGaugeValue.values()));
-        ret.add(new MetricsDto(MetricType.TIMER, new ArrayList<String>(metricRegistry.getTimers().keySet()), RatioGaugeValue.values()));
+        ret.add(new MetricsDto(MetricType.COUNTER, new TreeSet<>(metricRegistry.getCounters().keySet()), new RatioGaugeValue[]{RatioGaugeValue.COUNT}));
+        ret.add(new MetricsDto(MetricType.GAUGE, new TreeSet<>(metricRegistry.getGauges().keySet()), RatioGaugeValue.values()));
+        ret.add(new MetricsDto(MetricType.HISTOGRAM, new TreeSet<>(metricRegistry.getHistograms().keySet()), RatioGaugeValue.values()));
+        ret.add(new MetricsDto(MetricType.METER, new TreeSet<>(metricRegistry.getMeters().keySet()), RatioGaugeValue.values()));
+        ret.add(new MetricsDto(MetricType.TIMER, new TreeSet<>(metricRegistry.getTimers().keySet()), RatioGaugeValue.values()));
 
         return ret;
     }
@@ -49,8 +52,8 @@ public class MetricsController {
     @RequestMapping(value = "/metrics/ratioGauge", method = RequestMethod.POST)
     public void createRatioGauge(@RequestBody RatioGaugeDto dto) {
         metricRegistryService.registerRatioGauge(dto.getName(),
-                getSupplier(metricRegistry, dto.getNumerator()),
-                getSupplier(metricRegistry, dto.getDenominator()));
+                converter.convert(dto.getNumerator()),
+                converter.convert(dto.getDenominator()));
     }
 }
 

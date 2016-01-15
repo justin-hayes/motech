@@ -1,7 +1,5 @@
 package org.motechproject.metrics.web.dto;
 
-import org.motechproject.metrics.web.dto.MetricDto;
-
 public class RatioGaugeDto {
     private String name;
     private MetricDto numerator;
