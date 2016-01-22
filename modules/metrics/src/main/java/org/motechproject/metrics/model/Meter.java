@@ -1,26 +1,26 @@
 package org.motechproject.metrics.model;
 
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 
 public class Meter implements org.motechproject.metrics.api.Meter {
     private final com.codahale.metrics.Meter meter;
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
 
-    public Meter(com.codahale.metrics.Meter meter, MetricsConfigService metricsConfigService) {
+    public Meter(com.codahale.metrics.Meter meter, MetricsConfigFacade metricsConfigFacade) {
         this.meter = meter;
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
     }
 
     @Override
     public void mark() {
-        if (metricsConfigService.isMetricsEnabled()) {
+        if (metricsConfigFacade.isMetricsEnabled()) {
             meter.mark();
         }
     }
 
     @Override
     public void mark(long n) {
-        if (metricsConfigService.isMetricsEnabled()) {
+        if (metricsConfigFacade.isMetricsEnabled()) {
             meter.mark(n);
         }
     }

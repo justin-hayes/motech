@@ -12,7 +12,7 @@ import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import org.motechproject.metrics.config.ConsoleReporterConfig;
 import org.motechproject.metrics.config.GraphiteReporterConfig;
 import org.motechproject.metrics.config.MetricsConfig;
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import java.net.InetSocketAddress;
 @Component
 public class MetricRegistryInitializer {
     private final MetricRegistry metricRegistry;
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
 
     private ConsoleReporter consoleReporter;
     private GraphiteReporter graphiteReporter;
@@ -36,9 +36,9 @@ public class MetricRegistryInitializer {
 
     @Autowired
     public MetricRegistryInitializer(MetricRegistry metricRegistry,
-                                     MetricsConfigService metricsConfigService) {
+                                     MetricsConfigFacade metricsConfigFacade) {
         this.metricRegistry = metricRegistry;
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
     }
 
     @PostConstruct
@@ -50,7 +50,7 @@ public class MetricRegistryInitializer {
 
         stopReporters();
 
-        MetricsConfig metricsConfig = metricsConfigService.getMetricsConfig();
+        MetricsConfig metricsConfig = metricsConfigFacade.getMetricsConfig();
 
         if (metricsConfig.isMetricsEnabled()) {
             configureConsoleReporter(metricsConfig.getConsoleReporterConfig());

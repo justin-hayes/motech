@@ -12,7 +12,8 @@ import org.motechproject.metrics.MetricRegistryInitializer;
 import org.motechproject.metrics.config.ConsoleReporterConfig;
 import org.motechproject.metrics.config.GraphiteReporterConfig;
 import org.motechproject.metrics.config.MetricsConfig;
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.config.MetricsConfigFacade;
+import org.motechproject.metrics.util.ConfigUtil;
 import org.motechproject.metrics.web.MetricsConfigController;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.server.MockMvc;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.server.result.MockMvcResultMatchers.s
 @RunWith(MockitoJUnitRunner.class)
 public class MetricsConfigControllerTest {
     @Mock
-    private MetricsConfigService metricsConfigService;
+    private MetricsConfigFacade metricsConfigFacade;
 
     @Mock
     private MetricRegistryInitializer metricRegistryInitializer;
@@ -44,7 +45,7 @@ public class MetricsConfigControllerTest {
 
     @Before
     public void setUp() {
-        controller = MockMvcBuilders.standaloneSetup(new MetricsConfigController(metricsConfigService, metricRegistryInitializer)).build();
+        controller = MockMvcBuilders.standaloneSetup(new MetricsConfigController(metricsConfigFacade, metricRegistryInitializer)).build();
     }
 
     @Test
@@ -59,17 +60,14 @@ public class MetricsConfigControllerTest {
 
     @Test
     public void shouldDeserializeMetricsConfig() throws Exception {
-        MetricsConfig configToSave = new MetricsConfig();
-        configToSave.setMetricsEnabled(true);
-        configToSave.setConsoleReporterConfig(generateConsoleReporterConfig());
-        configToSave.setGraphiteReporterConfig(generateGraphiteReporterConfig());
+        MetricsConfig configToSave = ConfigUtil.getDefaultConfig();
 
         controller.perform(post("/config")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ObjectMapper().writeValueAsBytes(configToSave)))
                 .andExpect(status().isOk());
 
-        verify(metricsConfigService).saveMetricsConfig(configCaptor.capture());
+        verify(metricsConfigFacade).saveMetricsConfig(configCaptor.capture());
 
         verify(metricRegistryInitializer).init();
 
@@ -92,27 +90,5 @@ public class MetricsConfigControllerTest {
         assertEquals(TimeUnit.SECONDS, graphiteConfig.getFrequencyUnit());
         assertEquals(TimeUnit.MILLISECONDS, graphiteConfig.getConvertRates());
         assertEquals(TimeUnit.SECONDS, graphiteConfig.getConvertDurations());
-    }
-
-    private ConsoleReporterConfig generateConsoleReporterConfig() {
-        ConsoleReporterConfig config = new ConsoleReporterConfig();
-        config.setEnabled(true);
-        config.setFrequency(1);
-        config.setFrequencyUnit(TimeUnit.SECONDS);
-        config.setConvertRates(TimeUnit.MILLISECONDS);
-        config.setConvertDurations(TimeUnit.SECONDS);
-        return config;
-    }
-
-    private GraphiteReporterConfig generateGraphiteReporterConfig() {
-        GraphiteReporterConfig config = new GraphiteReporterConfig();
-        config.setEnabled(true);
-        config.setServerUri("http://foo.com/graphite");
-        config.setServerPort(2003);
-        config.setFrequency(1);
-        config.setFrequencyUnit(TimeUnit.SECONDS);
-        config.setConvertRates(TimeUnit.MILLISECONDS);
-        config.setConvertDurations(TimeUnit.SECONDS);
-        return config;
     }
 }

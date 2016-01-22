@@ -1,13 +1,12 @@
 package org.motechproject.metrics.model;
 
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class Timer implements org.motechproject.metrics.api.Timer {
     private final com.codahale.metrics.Timer timer;
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
 
     private static final class Context implements org.motechproject.metrics.api.Timer.Context {
         private final com.codahale.metrics.Timer.Context context;
@@ -22,27 +21,30 @@ public class Timer implements org.motechproject.metrics.api.Timer {
         }
     }
 
-    public Timer(com.codahale.metrics.Timer timer, MetricsConfigService metricsConfigService) {
+    private static final org.motechproject.metrics.api.Timer.Context DUMMY_CONTEXT = new org.motechproject.metrics.api.Timer.Context() {
+        @Override
+        public void stop() {}
+    };
+
+    public Timer(com.codahale.metrics.Timer timer, MetricsConfigFacade metricsConfigFacade) {
         this.timer = timer;
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
     }
 
     @Override
     public void update(long duration, TimeUnit unit) {
-        if (metricsConfigService.isMetricsEnabled()) {
+        if (metricsConfigFacade.isMetricsEnabled()) {
             timer.update(duration, unit);
         }
     }
 
     @Override
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
-    public <T> T time(Callable<T> event) throws Exception {
-        return timer.time(event);
-    }
-
-    @Override
     public org.motechproject.metrics.api.Timer.Context time() {
-        return new Context(timer.time());
+        if (metricsConfigFacade.isMetricsEnabled()) {
+            return new Context(timer.time());
+        } else {
+            return DUMMY_CONTEXT;
+        }
     }
 
     @Override

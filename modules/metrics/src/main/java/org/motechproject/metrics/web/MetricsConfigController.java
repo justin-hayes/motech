@@ -2,7 +2,7 @@ package org.motechproject.metrics.web;
 
 import org.motechproject.metrics.MetricRegistryInitializer;
 import org.motechproject.metrics.config.MetricsConfig;
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -18,26 +18,26 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 public class MetricsConfigController {
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
     private final MetricRegistryInitializer metricRegistryInitializer;
 
     @Autowired
-    public MetricsConfigController(MetricsConfigService metricsConfigService,
+    public MetricsConfigController(MetricsConfigFacade metricsConfigFacade,
                                    MetricRegistryInitializer metricRegistryInitializer) {
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
         this.metricRegistryInitializer = metricRegistryInitializer;
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     @ResponseBody
     public MetricsConfig getMetricsConfig() {
-        return metricsConfigService.getMetricsConfig();
+        return metricsConfigFacade.getMetricsConfig();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/config", method = RequestMethod.POST)
     public void saveSettings(@RequestBody MetricsConfig metricsConfig) {
-        metricsConfigService.saveMetricsConfig(metricsConfig);
+        metricsConfigFacade.saveMetricsConfig(metricsConfig);
         metricRegistryInitializer.init();
     }
 

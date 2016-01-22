@@ -7,8 +7,8 @@ import org.motechproject.metrics.api.Gauge;
 import org.motechproject.metrics.api.Histogram;
 import org.motechproject.metrics.api.Meter;
 import org.motechproject.metrics.api.Timer;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 import org.motechproject.metrics.service.MetricRegistryService;
-import org.motechproject.metrics.service.MetricsConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,36 +17,36 @@ import java.util.function.Supplier;
 @Service("metricRegistryService")
 public class MetricRegistryServiceImpl implements MetricRegistryService {
     private final MetricRegistry metricRegistry;
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
 
     @Autowired
-    public MetricRegistryServiceImpl(MetricRegistry metricRegistry, MetricsConfigService metricsConfigService) {
+    public MetricRegistryServiceImpl(MetricRegistry metricRegistry, MetricsConfigFacade metricsConfigFacade) {
         this.metricRegistry = metricRegistry;
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
     }
 
     @Override
     public Counter counter(final String name) {
         com.codahale.metrics.Counter counter = metricRegistry.counter(name);
-        return new org.motechproject.metrics.model.Counter(counter, metricsConfigService);
+        return new org.motechproject.metrics.model.Counter(counter, metricsConfigFacade);
     }
 
     @Override
     public Histogram histogram(final String name) {
         com.codahale.metrics.Histogram histogram = metricRegistry.histogram(name);
-        return new org.motechproject.metrics.model.Histogram(histogram, metricsConfigService);
+        return new org.motechproject.metrics.model.Histogram(histogram, metricsConfigFacade);
     }
 
     @Override
     public Meter meter(final String name) {
         com.codahale.metrics.Meter meter = metricRegistry.meter(name);
-        return new org.motechproject.metrics.model.Meter(meter, metricsConfigService);
+        return new org.motechproject.metrics.model.Meter(meter, metricsConfigFacade);
     }
 
     @Override
     public Timer timer(final String name) {
         com.codahale.metrics.Timer timer = metricRegistry.timer(name);
-        return new org.motechproject.metrics.model.Timer(timer, metricsConfigService);
+        return new org.motechproject.metrics.model.Timer(timer, metricsConfigFacade);
     }
 
     @Override

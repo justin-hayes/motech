@@ -1,6 +1,6 @@
 package org.motechproject.metrics.api;
 
-public interface Counter extends Counting{
+public interface Counter extends Counting {
     void inc();
     void inc(long n);
     void dec();

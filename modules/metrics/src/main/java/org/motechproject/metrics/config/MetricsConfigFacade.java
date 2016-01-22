@@ -1,21 +1,17 @@
-package org.motechproject.metrics.service.impl;
+package org.motechproject.metrics.config;
 
-import org.motechproject.metrics.config.ConsoleReporterConfig;
-import org.motechproject.metrics.config.GraphiteReporterConfig;
-import org.motechproject.metrics.config.MetricsConfig;
-import org.motechproject.metrics.service.MetricsConfigService;
 import org.motechproject.server.config.SettingsFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-@Service("metricsConfigService")
-public class MetricsConfigServiceImpl implements MetricsConfigService {
+@Component
+public class MetricsConfigFacade {
     private final SettingsFacade settingsFacade;
 
     private static final String CONFIG_FILE_NAME = "metrics.properties";
@@ -37,16 +33,14 @@ public class MetricsConfigServiceImpl implements MetricsConfigService {
     public static final String GRAPHITE_REPORTER_REPORTING_FREQUENCY_UNIT = "reporter.graphite.reportingFrequency.unit";
 
     @Autowired
-    public MetricsConfigServiceImpl(@Qualifier("metricsSettings") SettingsFacade settingsFacade) {
+    public MetricsConfigFacade(@Qualifier("metricsSettings") SettingsFacade settingsFacade) {
         this.settingsFacade = settingsFacade;
     }
 
-    @Override
     public boolean isMetricsEnabled() {
         return Boolean.valueOf(settingsFacade.getProperty(METRICS_ENABLED));
     }
 
-    @Override
     public MetricsConfig getMetricsConfig() {
         MetricsConfig config = new MetricsConfig();
 
@@ -57,7 +51,6 @@ public class MetricsConfigServiceImpl implements MetricsConfigService {
         return config;
     }
 
-    @Override
     public void saveMetricsConfig(MetricsConfig config) {
         Properties properties = settingsFacade.asProperties();
 
@@ -69,8 +62,7 @@ public class MetricsConfigServiceImpl implements MetricsConfigService {
         settingsFacade.saveConfigProperties(CONFIG_FILE_NAME, properties);
     }
 
-    @Override
-    public ConsoleReporterConfig getConsoleReporterConfig() {
+    private ConsoleReporterConfig getConsoleReporterConfig() {
         ConsoleReporterConfig config = new ConsoleReporterConfig();
 
         config.setEnabled(Boolean.valueOf(getPropertyValue(CONSOLE_REPORTER_ENABLED)));
@@ -82,8 +74,7 @@ public class MetricsConfigServiceImpl implements MetricsConfigService {
         return config;
     }
 
-    @Override
-    public GraphiteReporterConfig getGraphiteReporterConfig() {
+    private GraphiteReporterConfig getGraphiteReporterConfig() {
         GraphiteReporterConfig config = new GraphiteReporterConfig();
 
         config.setEnabled(Boolean.valueOf(getPropertyValue(GRAPHITE_REPORTER_ENABLED)));

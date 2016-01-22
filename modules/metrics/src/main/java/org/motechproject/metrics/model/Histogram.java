@@ -1,26 +1,27 @@
 package org.motechproject.metrics.model;
 
-import org.motechproject.metrics.service.MetricsConfigService;
+import org.motechproject.metrics.api.Snapshot;
+import org.motechproject.metrics.config.MetricsConfigFacade;
 
 public class Histogram implements org.motechproject.metrics.api.Histogram {
     private final com.codahale.metrics.Histogram histogram;
-    private final MetricsConfigService metricsConfigService;
+    private final MetricsConfigFacade metricsConfigFacade;
 
-    public Histogram(com.codahale.metrics.Histogram histogram, MetricsConfigService metricsConfigService) {
+    public Histogram(com.codahale.metrics.Histogram histogram, MetricsConfigFacade metricsConfigFacade) {
         this.histogram = histogram;
-        this.metricsConfigService = metricsConfigService;
+        this.metricsConfigFacade = metricsConfigFacade;
     }
 
     @Override
     public void update(int value) {
-        if (metricsConfigService.isMetricsEnabled()) {
+        if (metricsConfigFacade.isMetricsEnabled()) {
             histogram.update(value);
         }
     }
 
     @Override
     public void update(long value) {
-        if (metricsConfigService.isMetricsEnabled()) {
+        if (metricsConfigFacade.isMetricsEnabled()) {
             histogram.update(value);
         }
     }
@@ -28,5 +29,10 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
     @Override
     public long getCount() {
         return histogram.getCount();
+    }
+
+    @Override
+    public Snapshot getSnapshot() {
+        return new org.motechproject.metrics.model.Snapshot(histogram.getSnapshot());
     }
 }
