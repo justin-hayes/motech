@@ -2,11 +2,33 @@ package org.motechproject.metrics.config;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents configuration that is common across reporters.
+ */
 public abstract class BaseReporterConfig {
+    /**
+     * Whether or not the reporter is currently enabled.
+     */
     private boolean enabled;
+
+    /**
+     * The time unit to convert metrics' rates into when reporting.
+     */
     private TimeUnit convertRates;
+
+    /**
+     * The time unit to convert metrics' durations into when reporting.
+     */
     private TimeUnit convertDurations;
+
+    /**
+     * The interval at which reports are streamed.
+     */
     private int frequency;
+
+    /**
+     * The time unit associated with the frequency value at which reports are streamed.
+     */
     private TimeUnit frequencyUnit;
 
     public boolean isEnabled() {

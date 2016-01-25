@@ -10,6 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+/**
+ * Wraps the module's SettingsFacade and facilitates saving and loading configuration to and from Java objects
+ * and the properties file.
+ */
 @Component
 public class MetricsConfigFacade {
     private final SettingsFacade settingsFacade;
@@ -37,10 +41,18 @@ public class MetricsConfigFacade {
         this.settingsFacade = settingsFacade;
     }
 
+    /**
+     * Returns whether or not the Metrics module is currently enabled.
+     * @return true if the module is enabled, otherwise false.
+     */
     public boolean isMetricsEnabled() {
         return Boolean.valueOf(settingsFacade.getProperty(METRICS_ENABLED));
     }
 
+    /**
+     * Loads a MetricsConfig object from the settings indicated in the properties file.
+     * @return the metrics configuration
+     */
     public MetricsConfig getMetricsConfig() {
         MetricsConfig config = new MetricsConfig();
 
@@ -51,6 +63,10 @@ public class MetricsConfigFacade {
         return config;
     }
 
+    /**
+     * Saves settings from a MetricsConfig object to the properties file.
+     * @param config the module configuration
+     */
     public void saveMetricsConfig(MetricsConfig config) {
         Properties properties = settingsFacade.asProperties();
 

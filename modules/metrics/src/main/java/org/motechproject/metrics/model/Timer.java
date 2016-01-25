@@ -1,5 +1,6 @@
 package org.motechproject.metrics.model;
 
+import org.motechproject.metrics.api.Snapshot;
 import org.motechproject.metrics.config.MetricsConfigFacade;
 
 import java.util.concurrent.TimeUnit;
@@ -70,5 +71,10 @@ public class Timer implements org.motechproject.metrics.api.Timer {
     @Override
     public double getOneMinuteRate() {
         return timer.getOneMinuteRate();
+    }
+
+    @Override
+    public Snapshot getSnapshot() {
+        return new org.motechproject.metrics.model.Snapshot(timer.getSnapshot());
     }
 }

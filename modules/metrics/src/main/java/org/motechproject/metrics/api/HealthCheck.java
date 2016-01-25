@@ -1,7 +1,5 @@
 package org.motechproject.metrics.api;
 
-import org.motechproject.metrics.model.HealthCheckResult;
-
 /**
  * Represents a view of the health of a system component.
  */
