@@ -14,7 +14,7 @@ public interface Histogram extends Counting, Sampling {
     /**
      * Update the histogram by recording a new value.
      *
-     * d@param value the value to record
+     * @param value the value to record
      */
     void update(long value);
 }

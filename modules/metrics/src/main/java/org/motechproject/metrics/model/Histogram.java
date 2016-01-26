@@ -3,6 +3,9 @@ package org.motechproject.metrics.model;
 import org.motechproject.metrics.api.Snapshot;
 import org.motechproject.metrics.config.MetricsConfigFacade;
 
+/**
+ * A histogram implementation that can be enabled or disabled depending on configuration settings.
+ */
 public class Histogram implements org.motechproject.metrics.api.Histogram {
     private final com.codahale.metrics.Histogram histogram;
     private final MetricsConfigFacade metricsConfigFacade;
@@ -12,6 +15,11 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
         this.metricsConfigFacade = metricsConfigFacade;
     }
 
+    /**
+     * If metrics are enabled, then add another value to the histogram.
+     *
+     * @param value the value to record
+     */
     @Override
     public void update(int value) {
         if (metricsConfigFacade.isMetricsEnabled()) {
@@ -19,6 +27,11 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
         }
     }
 
+    /**
+     * If metrics are enabled, then add another value to the histogram.
+     *
+     * @param value the value to record
+     */
     @Override
     public void update(long value) {
         if (metricsConfigFacade.isMetricsEnabled()) {

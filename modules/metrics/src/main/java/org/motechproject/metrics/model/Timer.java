@@ -5,6 +5,9 @@ import org.motechproject.metrics.config.MetricsConfigFacade;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A timer implementation that can be enabled or disabled depending on configuration settings.
+ */
 public class Timer implements org.motechproject.metrics.api.Timer {
     private final com.codahale.metrics.Timer timer;
     private final MetricsConfigFacade metricsConfigFacade;
@@ -32,6 +35,12 @@ public class Timer implements org.motechproject.metrics.api.Timer {
         this.metricsConfigFacade = metricsConfigFacade;
     }
 
+    /**
+     * If metrics is enabled, then update the timer with the provided duration, otherwise, do nothing.
+     *
+     * @param duration the length of the duration
+     * @param unit the time unit of the duration
+     */
     @Override
     public void update(long duration, TimeUnit unit) {
         if (metricsConfigFacade.isMetricsEnabled()) {
@@ -39,6 +48,12 @@ public class Timer implements org.motechproject.metrics.api.Timer {
         }
     }
 
+    /**
+     * If metrics is enabled, then return a functional instance of a timer context, otherwise, return a dummy instance
+     * with no-op methods.
+     *
+     * @return the timer context
+     */
     @Override
     public org.motechproject.metrics.api.Timer.Context time() {
         if (metricsConfigFacade.isMetricsEnabled()) {
