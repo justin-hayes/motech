@@ -1,17 +1,27 @@
 package org.motechproject.metrics.model;
 
-import org.motechproject.metrics.config.MetricsConfigFacade;
+import org.motechproject.metrics.api.Meter;
 
 /**
  * A meter implementation that can be enabled or disabled depending on configuration settings.
  */
-public class Meter implements org.motechproject.metrics.api.Meter {
+public class MeterAdapter implements Meter, Enablable {
     private final com.codahale.metrics.Meter meter;
-    private final MetricsConfigFacade metricsConfigFacade;
+    private boolean isEnabled;
 
-    public Meter(com.codahale.metrics.Meter meter, MetricsConfigFacade metricsConfigFacade) {
+    public MeterAdapter(com.codahale.metrics.Meter meter, boolean enabled) {
         this.meter = meter;
-        this.metricsConfigFacade = metricsConfigFacade;
+        isEnabled = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     /**
@@ -19,7 +29,7 @@ public class Meter implements org.motechproject.metrics.api.Meter {
      */
     @Override
     public void mark() {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             meter.mark();
         }
     }
@@ -31,7 +41,7 @@ public class Meter implements org.motechproject.metrics.api.Meter {
      */
     @Override
     public void mark(long n) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             meter.mark(n);
         }
     }

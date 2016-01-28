@@ -1,7 +1,7 @@
 package org.motechproject.metrics.builder;
 
 import org.motechproject.metrics.api.HealthCheck;
-import org.motechproject.metrics.model.HealthCheckResult;
+import org.motechproject.metrics.model.ResultAdapter;
 
 /**
  * Helper class enabling client modules to build instances of health check results to satisfy the HealthCheck contract.
@@ -13,7 +13,7 @@ public final class HealthCheckResultBuilder {
      * @return a healthy check result
      */
     public static HealthCheck.Result healthy() {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.healthy());
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.healthy());
     }
 
     /**
@@ -23,7 +23,7 @@ public final class HealthCheckResultBuilder {
      * @return the healthy check result
      */
     public static HealthCheck.Result healthy(String message) {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.healthy(message));
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.healthy(message));
     }
 
     /**
@@ -34,7 +34,7 @@ public final class HealthCheckResultBuilder {
      * @return the healthy check result
      */
     public static HealthCheck.Result healthy(String message, Object... args) {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.healthy(message, args));
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.healthy(message, args));
     }
 
     /**
@@ -44,7 +44,7 @@ public final class HealthCheckResultBuilder {
      * @return the unhealthy check result
      */
     public static HealthCheck.Result unhealthy(String message) {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.unhealthy(message));
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.unhealthy(message));
     }
 
     /**
@@ -55,7 +55,7 @@ public final class HealthCheckResultBuilder {
      * @return the unhealthy check result
      */
     public static HealthCheck.Result unhealthy(String message, Object... args) {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.unhealthy(message, args));
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.unhealthy(message, args));
     }
 
     /**
@@ -65,7 +65,7 @@ public final class HealthCheckResultBuilder {
      * @return the unhealthy check result
      */
     public static HealthCheck.Result unhealthy(Throwable error) {
-        return new HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result.unhealthy(error));
+        return new ResultAdapter(com.codahale.metrics.health.HealthCheck.Result.unhealthy(error));
     }
 
     private HealthCheckResultBuilder() {}

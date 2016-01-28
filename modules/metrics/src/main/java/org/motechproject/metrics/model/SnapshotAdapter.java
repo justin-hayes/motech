@@ -3,10 +3,10 @@ package org.motechproject.metrics.model;
 /**
  * Implementation of a snapshot of a histogram.
  */
-public class Snapshot implements org.motechproject.metrics.api.Snapshot {
+public class SnapshotAdapter implements org.motechproject.metrics.api.Snapshot {
     private final com.codahale.metrics.Snapshot snapshot;
 
-    public Snapshot(com.codahale.metrics.Snapshot snapshot) {
+    public SnapshotAdapter(com.codahale.metrics.Snapshot snapshot) {
         this.snapshot = snapshot;
     }
 

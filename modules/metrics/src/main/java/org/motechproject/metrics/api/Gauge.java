@@ -5,7 +5,7 @@ package org.motechproject.metrics.api;
  *
  * @param <T> the type of the returned value
  */
-public interface Gauge<T> {
+public interface Gauge<T> extends Metric {
     /**
      * Get the current value.
      *

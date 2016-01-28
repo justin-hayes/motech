@@ -9,6 +9,8 @@ import org.motechproject.metrics.api.Timer;
 import java.util.function.Supplier;
 
 public interface MetricRegistryService {
+    void enableMetrics();
+    void disableMetrics();
     Counter counter(final String name);
     Histogram histogram(final String name);
     Meter meter(final String name);

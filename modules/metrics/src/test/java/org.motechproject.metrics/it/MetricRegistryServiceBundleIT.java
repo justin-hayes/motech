@@ -18,10 +18,13 @@ import org.ops4j.pax.exam.spi.reactors.PerSuite;
 
 import javax.inject.Inject;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PaxExam.class)
@@ -39,25 +42,49 @@ public class MetricRegistryServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldCreateCounter() {
         Counter counter = metricRegistryService.counter("counter");
+        Counter copy = metricRegistryService.counter("counter");
+        Counter counter2 = metricRegistryService.counter("counter2");
+
         assertNotNull(counter);
+        assertNotNull(copy);
+        assertEquals(counter, copy);
+        assertNotSame(counter, counter2);
     }
 
     @Test
     public void shouldCreateHistogram() {
         Histogram histogram = metricRegistryService.histogram("histogram");
+        Histogram copy = metricRegistryService.histogram("histogram");
+        Histogram histogram2 = metricRegistryService.histogram("histogram2");
+
         assertNotNull(histogram);
+        assertNotNull(copy);
+        assertEquals(histogram, copy);
+        assertNotSame(histogram, histogram2);
     }
 
     @Test
     public void shouldCreateMeter() {
         Meter meter = metricRegistryService.meter("meter");
+        Meter copy = metricRegistryService.meter("meter");
+        Meter meter2 = metricRegistryService.meter("meter2");
+
         assertNotNull(meter);
+        assertNotNull(copy);
+        assertEquals(meter, copy);
+        assertNotSame(meter, meter2);
     }
 
     @Test
     public void shouldCreateTimer() {
         Timer timer =  metricRegistryService.timer("timer");
+        Timer copy = metricRegistryService.timer("timer");
+        Timer timer2 = metricRegistryService.timer("timer2");
+
         assertNotNull(timer);
+        assertNotNull(copy);
+        assertEquals(timer, copy);
+        assertNotSame(timer, timer2);
     }
 
     @Test
@@ -98,5 +125,48 @@ public class MetricRegistryServiceBundleIT extends BasePaxIT {
     @Test
     public void shouldIdentifyMetricAsNotRegistered() {
         assertFalse(metricRegistryService.isRegistered("foo"));
+    }
+
+    @Test
+    public void shouldEnableMetrics() {
+        // metrics initialized to disabled
+        Counter counter = metricRegistryService.counter("counter");
+        Meter meter = metricRegistryService.meter("meter");
+        Histogram histogram = metricRegistryService.histogram("histogram");
+        Timer timer = metricRegistryService.timer("timer");
+
+        counter.inc();
+        meter.mark();
+        histogram.update(1);
+        timer.update(1, TimeUnit.SECONDS);
+
+        assertEquals(0, counter.getCount());
+        assertEquals(0, meter.getCount());
+        assertEquals(0, histogram.getCount());
+        assertEquals(0, timer.getCount());
+
+        // enable the metrics and retest
+        metricRegistryService.setMetricsEnabled(true);
+        counter.inc();
+        meter.mark();
+        histogram.update(1);
+        timer.update(1, TimeUnit.SECONDS);
+
+        assertEquals(1, counter.getCount());
+        assertEquals(1, meter.getCount());
+        assertEquals(1, histogram.getCount());
+        assertEquals(1, timer.getCount());
+
+        // disable the metrics again and retest
+        metricRegistryService.setMetricsEnabled(false);
+        counter.inc();
+        meter.mark();
+        histogram.update(1);
+        timer.update(1, TimeUnit.SECONDS);
+
+        assertEquals(1, counter.getCount());
+        assertEquals(1, meter.getCount());
+        assertEquals(1, histogram.getCount());
+        assertEquals(1, timer.getCount());
     }
 }

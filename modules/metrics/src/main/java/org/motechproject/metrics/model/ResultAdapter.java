@@ -5,10 +5,10 @@ import org.motechproject.metrics.api.HealthCheck;
 /**
  * An implementation of a health check result.
  */
-public class HealthCheckResult implements HealthCheck.Result {
+public class ResultAdapter implements HealthCheck.Result {
     private final com.codahale.metrics.health.HealthCheck.Result result;
 
-    public HealthCheckResult(com.codahale.metrics.health.HealthCheck.Result result) {
+    public ResultAdapter(com.codahale.metrics.health.HealthCheck.Result result) {
         this.result = result;
     }
 

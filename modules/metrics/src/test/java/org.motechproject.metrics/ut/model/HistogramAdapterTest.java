@@ -1,48 +1,29 @@
 package org.motechproject.metrics.ut.model;
 
 import com.codahale.metrics.ExponentiallyDecayingReservoir;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.motechproject.metrics.api.Snapshot;
-import org.motechproject.metrics.config.MetricsConfigFacade;
-import org.motechproject.metrics.model.Histogram;
-
-import java.util.Arrays;
+import org.motechproject.metrics.model.HistogramAdapter;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class HistogramTest {
-    @Mock
-    private MetricsConfigFacade metricsConfigFacade;
-
-    private Histogram histogram;
-
-    @Before
-    public void setUp() {
-        histogram = new Histogram(new com.codahale.metrics.Histogram(new ExponentiallyDecayingReservoir()), metricsConfigFacade);
-    }
-
+public class HistogramAdapterTest {
     @Test
     public void testHistogramWithMetricsEnabled() {
-        when(metricsConfigFacade.isMetricsEnabled()).thenReturn(true);
+        HistogramAdapter histogramAdapter = new HistogramAdapter(new com.codahale.metrics.Histogram(new ExponentiallyDecayingReservoir()), true);
 
         for (int i = 1; i <= 9; i++) {
-            histogram.update(i);
+            histogramAdapter.update(i);
         }
 
-        assertEquals(9, histogram.getCount());
+        assertEquals(9, histogramAdapter.getCount());
 
-        histogram.update(10L);
+        histogramAdapter.update(10L);
 
-        assertEquals(10, histogram.getCount());
+        assertEquals(10, histogramAdapter.getCount());
 
-        Snapshot snapshot = histogram.getSnapshot();
+        Snapshot snapshot = histogramAdapter.getSnapshot();
         assertEquals(8.0, snapshot.get75thPercentile(), 0);
         assertEquals(10, snapshot.get95thPercentile(), 0);
         assertEquals(10, snapshot.get99thPercentile(), 0);
@@ -58,19 +39,19 @@ public class HistogramTest {
 
     @Test
     public void testHistogramWithMetricsDisabled() {
-        when(metricsConfigFacade.isMetricsEnabled()).thenReturn(false);
+        HistogramAdapter histogramAdapter = new HistogramAdapter(new com.codahale.metrics.Histogram(new ExponentiallyDecayingReservoir()), false);
 
         for (int i = 1; i <= 9; i++) {
-            histogram.update(i);
+            histogramAdapter.update(i);
         }
 
-        assertEquals(0, histogram.getCount());
+        assertEquals(0, histogramAdapter.getCount());
 
-        histogram.update(10L);
+        histogramAdapter.update(10L);
 
-        assertEquals(0, histogram.getCount());
+        assertEquals(0, histogramAdapter.getCount());
 
-        Snapshot snapshot = histogram.getSnapshot();
+        Snapshot snapshot = histogramAdapter.getSnapshot();
         assertEquals(0, snapshot.get75thPercentile(), 0);
         assertEquals(0, snapshot.get95thPercentile(), 0);
         assertEquals(0, snapshot.get99thPercentile(), 0);

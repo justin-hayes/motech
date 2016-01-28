@@ -1,17 +1,28 @@
 package org.motechproject.metrics.model;
 
-import org.motechproject.metrics.config.MetricsConfigFacade;
+
+import org.motechproject.metrics.api.Counter;
 
 /**
  * A counter implementation that can be enabled or disabled depending on configuration settings.
  */
-public class Counter implements org.motechproject.metrics.api.Counter {
+public class CounterAdapter implements Counter, Enablable {
     private final com.codahale.metrics.Counter counter;
-    private final MetricsConfigFacade metricsConfigFacade;
+    private boolean isEnabled;
 
-    public Counter(com.codahale.metrics.Counter counter, MetricsConfigFacade metricsConfigFacade) {
+    public CounterAdapter(com.codahale.metrics.Counter counter, boolean enabled) {
         this.counter = counter;
-        this.metricsConfigFacade = metricsConfigFacade;
+        isEnabled = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     /**
@@ -19,7 +30,7 @@ public class Counter implements org.motechproject.metrics.api.Counter {
      */
     @Override
     public void inc() {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             counter.inc();
         }
     }
@@ -30,7 +41,7 @@ public class Counter implements org.motechproject.metrics.api.Counter {
      */
     @Override
     public void inc(long n) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             counter.inc(n);
         }
     }
@@ -40,7 +51,7 @@ public class Counter implements org.motechproject.metrics.api.Counter {
      */
     @Override
     public void dec() {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             counter.dec();
         }
     }
@@ -52,7 +63,7 @@ public class Counter implements org.motechproject.metrics.api.Counter {
      */
     @Override
     public void dec(long n) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             counter.dec(n);
         }
     }

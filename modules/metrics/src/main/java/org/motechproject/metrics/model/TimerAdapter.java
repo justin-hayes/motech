@@ -1,16 +1,16 @@
 package org.motechproject.metrics.model;
 
 import org.motechproject.metrics.api.Snapshot;
-import org.motechproject.metrics.config.MetricsConfigFacade;
+import org.motechproject.metrics.api.Timer;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * A timer implementation that can be enabled or disabled depending on configuration settings.
  */
-public class Timer implements org.motechproject.metrics.api.Timer {
+public class TimerAdapter implements Timer, Enablable {
     private final com.codahale.metrics.Timer timer;
-    private final MetricsConfigFacade metricsConfigFacade;
+    private boolean isEnabled;
 
     private static final class Context implements org.motechproject.metrics.api.Timer.Context {
         private final com.codahale.metrics.Timer.Context context;
@@ -30,9 +30,9 @@ public class Timer implements org.motechproject.metrics.api.Timer {
         public void stop() {}
     };
 
-    public Timer(com.codahale.metrics.Timer timer, MetricsConfigFacade metricsConfigFacade) {
+    public TimerAdapter(com.codahale.metrics.Timer timer, boolean enabled) {
         this.timer = timer;
-        this.metricsConfigFacade = metricsConfigFacade;
+        this.isEnabled = enabled;
     }
 
     /**
@@ -43,7 +43,7 @@ public class Timer implements org.motechproject.metrics.api.Timer {
      */
     @Override
     public void update(long duration, TimeUnit unit) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             timer.update(duration, unit);
         }
     }
@@ -56,11 +56,21 @@ public class Timer implements org.motechproject.metrics.api.Timer {
      */
     @Override
     public org.motechproject.metrics.api.Timer.Context time() {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             return new Context(timer.time());
         } else {
             return DUMMY_CONTEXT;
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     @Override
@@ -90,6 +100,6 @@ public class Timer implements org.motechproject.metrics.api.Timer {
 
     @Override
     public Snapshot getSnapshot() {
-        return new org.motechproject.metrics.model.Snapshot(timer.getSnapshot());
+        return new SnapshotAdapter(timer.getSnapshot());
     }
 }

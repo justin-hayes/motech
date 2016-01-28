@@ -1,18 +1,28 @@
 package org.motechproject.metrics.model;
 
+import org.motechproject.metrics.api.Histogram;
 import org.motechproject.metrics.api.Snapshot;
-import org.motechproject.metrics.config.MetricsConfigFacade;
 
 /**
  * A histogram implementation that can be enabled or disabled depending on configuration settings.
  */
-public class Histogram implements org.motechproject.metrics.api.Histogram {
+public class HistogramAdapter implements Histogram, Enablable {
     private final com.codahale.metrics.Histogram histogram;
-    private final MetricsConfigFacade metricsConfigFacade;
+    private boolean isEnabled;
 
-    public Histogram(com.codahale.metrics.Histogram histogram, MetricsConfigFacade metricsConfigFacade) {
+    public HistogramAdapter(com.codahale.metrics.Histogram histogram, boolean enabled) {
         this.histogram = histogram;
-        this.metricsConfigFacade = metricsConfigFacade;
+        isEnabled = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     /**
@@ -22,7 +32,7 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
      */
     @Override
     public void update(int value) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             histogram.update(value);
         }
     }
@@ -34,7 +44,7 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
      */
     @Override
     public void update(long value) {
-        if (metricsConfigFacade.isMetricsEnabled()) {
+        if (isEnabled()) {
             histogram.update(value);
         }
     }
@@ -46,6 +56,6 @@ public class Histogram implements org.motechproject.metrics.api.Histogram {
 
     @Override
     public Snapshot getSnapshot() {
-        return new org.motechproject.metrics.model.Snapshot(histogram.getSnapshot());
+        return new SnapshotAdapter(histogram.getSnapshot());
     }
 }

@@ -3,7 +3,7 @@ package org.motechproject.metrics.api;
 /**
  * Represents a metric that measures throughput.
  */
-public interface Meter extends Metered {
+public interface Meter extends Metric, Metered {
     /**
      * Mark the occurence of an event.
      */

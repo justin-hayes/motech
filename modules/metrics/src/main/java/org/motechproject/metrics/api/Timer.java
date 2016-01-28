@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Represents a metric that collects the durations of timed operations.
  */
-public interface Timer extends Metered, Sampling {
+public interface Timer extends Metric, Metered, Sampling {
     /**
      * An object that represents a timing context.
      */

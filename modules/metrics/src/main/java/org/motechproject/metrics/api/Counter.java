@@ -3,7 +3,7 @@ package org.motechproject.metrics.api;
 /**
  * Represents a metric that increments and decrements a counted value.
  */
-public interface Counter extends Counting {
+public interface Counter extends Metric, Counting {
     /**
      * Increment the counter's current value by one.
      */

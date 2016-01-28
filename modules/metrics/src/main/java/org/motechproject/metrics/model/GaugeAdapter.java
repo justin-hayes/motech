@@ -5,10 +5,10 @@ package org.motechproject.metrics.model;
  *
  * @param <T> the return type when getting the gauge's value
  */
-public class Gauge<T> implements org.motechproject.metrics.api.Gauge<T> {
+public class GaugeAdapter<T> implements org.motechproject.metrics.api.Gauge<T> {
     private final com.codahale.metrics.Gauge<T> gauge;
 
-    public Gauge(com.codahale.metrics.Gauge<T> gauge) {
+    public GaugeAdapter(com.codahale.metrics.Gauge<T> gauge) {
         this.gauge = gauge;
     }
 
