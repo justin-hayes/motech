@@ -38,13 +38,12 @@ public class MetricRegistryServiceImpl implements MetricRegistryService {
     }
 
     @Override
-    public void enableMetrics() {
-        setMetricsEnabled(true);
-    }
-
-    @Override
-    public void disableMetrics() {
-        setMetricsEnabled(false);
+    public void setEnabled(boolean enabled) {
+        for (Metric metric: metrics.values()) {
+            if (metric instanceof Enablable && ((Enablable) metric).isEnabled() != enabled) {
+                ((Enablable) metric).setEnabled(enabled);
+            }
+        }
     }
 
     @Override
@@ -111,14 +110,6 @@ public class MetricRegistryServiceImpl implements MetricRegistryService {
             return (T) metric;
         } else {
             throw new IllegalArgumentException("Name already associated with metric of different type!");
-        }
-    }
-
-    private void setMetricsEnabled(boolean enabled) {
-        for (Metric metric: metrics.values()) {
-            if (metric instanceof Enablable) {
-                ((Enablable) metric).setEnabled(enabled);
-            }
         }
     }
 

@@ -146,7 +146,7 @@ public class MetricRegistryServiceBundleIT extends BasePaxIT {
         assertEquals(0, timer.getCount());
 
         // enable the metrics and retest
-        metricRegistryService.setMetricsEnabled(true);
+        metricRegistryService.setEnabled(true);
         counter.inc();
         meter.mark();
         histogram.update(1);
@@ -158,7 +158,7 @@ public class MetricRegistryServiceBundleIT extends BasePaxIT {
         assertEquals(1, timer.getCount());
 
         // disable the metrics again and retest
-        metricRegistryService.setMetricsEnabled(false);
+        metricRegistryService.setEnabled(false);
         counter.inc();
         meter.mark();
         histogram.update(1);
