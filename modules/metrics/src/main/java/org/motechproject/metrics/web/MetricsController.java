@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+/**
+ * Sends details about the currently registered metrics to the user interface.
+ */
 @Controller
 public class MetricsController {
     private final MetricRegistry metricRegistry;
@@ -34,6 +37,20 @@ public class MetricsController {
         this.converter = converter;
     }
 
+    /**
+     * Returns a list of objects (one object per metric type), with the registered names of that metric type and values
+     * by which a ratio gauge could be derived.
+     * i.e.
+     * [
+     *  {
+     *    "type":"COUNTER",
+     *    "names":["org.foo.module.counter1", "org.foo.module.counter2..."],
+     *    "values":["COUNT"]
+     *  },
+     *  ...
+     * ]
+     * @return a detail of the currently registered metrics
+     */
     @RequestMapping(value = "/metrics", method = RequestMethod.GET)
     @ResponseBody
     public List<MetricsDto> getMetrics() {
@@ -48,6 +65,11 @@ public class MetricsController {
         return ret;
     }
 
+    /**
+     * Creates a ratio gauge from a ratio gauge dto
+     *
+     * @param dto the ratio gauge dto
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/metrics/ratioGauge", method = RequestMethod.POST)
     public void createRatioGauge(@RequestBody RatioGaugeDto dto) {

@@ -1,5 +1,8 @@
 package org.motechproject.metrics.web.dto;
 
+/**
+ * Represents a single configured selection of either a numerator or denominator from the user interface.
+ */
 public class MetricDto {
     private String name;
     private MetricType type;

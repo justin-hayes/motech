@@ -21,6 +21,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
 
+/**
+ * Responsible for initializing the metric registry when the module loads or configuration details change.
+ */
 @Component
 public class MetricRegistryInitializer {
     private final MetricRegistry metricRegistry;
@@ -47,6 +50,7 @@ public class MetricRegistryInitializer {
 
     @PostConstruct
     public void init() {
+        // register the default metrics only when the module first loads
         if (!defaultMetricsRegistered) {
             registerDefaultMetrics();
             defaultMetricsRegistered = true;
@@ -64,6 +68,11 @@ public class MetricRegistryInitializer {
         }
     }
 
+    /**
+     * Initializes the console reporter based on the current configuration.
+     *
+     * @param config the console reporter configuration
+     */
     private void configureConsoleReporter(ConsoleReporterConfig config) {
         if (config.isEnabled()) {
             consoleReporter = ConsoleReporter.forRegistry(metricRegistry)
@@ -75,6 +84,11 @@ public class MetricRegistryInitializer {
         }
     }
 
+    /**
+     * Initializes the Graphite reporter based on the current configuration.
+     *
+     * @param config the graphite reporter configuration
+     */
     private void configureGraphiteReporter(GraphiteReporterConfig config) {
         if (config.isEnabled()) {
             Graphite graphite = new Graphite(new InetSocketAddress(
@@ -94,6 +108,9 @@ public class MetricRegistryInitializer {
         }
     }
 
+    /**
+     * Registers a default set of metrics for the JVM.
+     */
     private void registerDefaultMetrics() {
         metricRegistry.register(JVM_GARBAGE_COLLECTOR_METRICS, new GarbageCollectorMetricSet());
         metricRegistry.register(JVM_MEMORY_METRICS, new MemoryUsageGaugeSet());
@@ -101,6 +118,9 @@ public class MetricRegistryInitializer {
         metricRegistry.register(JVM_FILE_DESCRIPTOR_METRICS, new FileDescriptorRatioGauge());
     }
 
+    /**
+     * Stop the reporter threads.
+     */
     @PreDestroy
     public void stopReporters() {
         if (consoleReporter != null) {

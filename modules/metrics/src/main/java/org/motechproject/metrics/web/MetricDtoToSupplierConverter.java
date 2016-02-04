@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
 
+/**
+ * Helper component that maps a metric, as described by settings collected from the user interface,
+ * to a function accepted by {@link org.motechproject.metrics.service.MetricRegistryService#registerRatioGauge(String, Supplier, Supplier)}
+ */
 @Component
 public class MetricDtoToSupplierConverter {
     private MetricRegistry metricRegistry;
@@ -21,9 +25,15 @@ public class MetricDtoToSupplierConverter {
         this.metricRegistry = metricRegistry;
     }
 
+    /**
+     * Returns the appropriate function depending on configuration sent from the user interface.
+     *
+     * @param dto an object describing the type of function to create
+     * @return a function that yields a number
+     */
     public Supplier<Number> convert(MetricDto dto) {
         Metric metric = getMetric(dto);
-        Supplier<Number> ret;
+        Supplier<Number> ret = null;
 
         switch (dto.getValue()) {
             case COUNT:
@@ -66,14 +76,18 @@ public class MetricDtoToSupplierConverter {
                     }
                 };
                 break;
-            default:
-                ret = null;
-                break;
         }
 
         return ret;
     }
 
+    /**
+     * Queries the metric registry for the metric matching the type and name of the data transfer object. If a metric
+     * is not found, throws a {@link MetricNotFoundException}
+     *
+     * @param dto an object describing the type of metric to retrieve
+     * @return a metric from the registry
+     */
     private Metric getMetric(MetricDto dto) {
         Metric ret = null;
 
@@ -126,6 +140,4 @@ public class MetricDtoToSupplierConverter {
 
         return ret;
     }
-
-    private MetricDtoToSupplierConverter() {}
 }

@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Sends and receives configuration to and from the user interface.
+ */
 @Controller
 public class MetricsConfigController {
     private final MetricsConfigFacade metricsConfigFacade;
@@ -28,12 +31,22 @@ public class MetricsConfigController {
         this.metricRegistryInitializer = metricRegistryInitializer;
     }
 
+    /**
+     * Retrieves the current configuration.
+     *
+     * @return the current configuration
+     */
     @RequestMapping(value = "/config", method = RequestMethod.GET)
     @ResponseBody
     public MetricsConfig getMetricsConfig() {
         return metricsConfigFacade.getMetricsConfig();
     }
 
+    /**
+     * Updates configuration sent from the user interface and reinitializes the module with those new settings.
+     *
+     * @param metricsConfig the updated configuration
+     */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/config", method = RequestMethod.POST)
     public void saveSettings(@RequestBody MetricsConfig metricsConfig) {
@@ -41,6 +54,11 @@ public class MetricsConfigController {
         metricRegistryInitializer.init();
     }
 
+    /**
+     * Sends the module's accepted time units to the user interface.
+     *
+     * @return an object with the accepted time units
+     */
     @RequestMapping(value = "/config/timeUnits", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, TimeUnit[]> getAcceptableTimeUnits() {

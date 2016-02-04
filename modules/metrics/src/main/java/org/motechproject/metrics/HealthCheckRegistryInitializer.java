@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * Responsible for performing default initialization of the health check registry.
+ */
 @Component
 public class HealthCheckRegistryInitializer {
     @Autowired

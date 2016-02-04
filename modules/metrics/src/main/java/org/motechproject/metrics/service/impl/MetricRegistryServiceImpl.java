@@ -68,25 +68,34 @@ public class MetricRegistryServiceImpl implements MetricRegistryService {
 
     @Override
     public <T> Gauge<T> registerGauge(final String name, final Gauge<T> gauge) {
-        com.codahale.metrics.Gauge<T> theGauge = metricRegistry.register(name, new com.codahale.metrics.Gauge<T>() {
-            @Override
-            public T getValue() {
-                return gauge.getValue();
-            }
-        });
+        com.codahale.metrics.Gauge<T> theGauge;
+        try {
+            theGauge = metricRegistry.register(name, new com.codahale.metrics.Gauge<T>() {
+                @Override
+                public T getValue() {
+                    return gauge.getValue();
+                }
+            });
+        } catch (IllegalArgumentException ex) {
+            throw ex;
+        }
         return new GaugeAdapter<T>(theGauge);
     }
 
     @Override
     public <T extends Number> Gauge<Double> registerRatioGauge(final String name, Supplier<T> numerator, Supplier<T> denominator) {
-        com.codahale.metrics.RatioGauge theGauge = metricRegistry.register(name, new RatioGauge() {
-            @Override
-            protected Ratio getRatio() {
-                return Ratio.of(numerator.get().doubleValue(), denominator.get().doubleValue());
-            }
-        });
-
-        return new GaugeAdapter<Double>(theGauge);
+        com.codahale.metrics.RatioGauge theGauge;
+        try {
+            theGauge = metricRegistry.register(name, new RatioGauge() {
+                @Override
+                protected Ratio getRatio() {
+                    return Ratio.of(numerator.get().doubleValue(), denominator.get().doubleValue());
+                }
+            });
+        } catch (IllegalArgumentException ex) {
+            throw ex;
+        }
+        return new GaugeAdapter<>(theGauge);
     }
 
     @Override

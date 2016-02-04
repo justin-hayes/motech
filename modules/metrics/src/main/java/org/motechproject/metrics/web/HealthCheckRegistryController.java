@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.SortedMap;
 
+/**
+ * Initiates health checks from the user interface and returns the result.
+ */
 @Controller
 public class HealthCheckRegistryController {
     private HealthCheckRegistry healthCheckRegistry;
@@ -18,6 +21,11 @@ public class HealthCheckRegistryController {
         this.healthCheckRegistry = healthCheckRegistry;
     }
 
+    /**
+     * Runs all registered health checks and returns the results.
+     *
+     * @return the health check results
+     */
     @RequestMapping("/healthChecks")
     @ResponseBody
     public SortedMap<String, HealthCheck.Result> runHealthChecks() {

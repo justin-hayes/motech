@@ -1,5 +1,8 @@
 package org.motechproject.metrics.web.dto;
 
+/**
+ * Represents an instance of a ratio gauge created in the user interface.
+ */
 public class RatioGaugeDto {
     private String name;
     private MetricDto numerator;
