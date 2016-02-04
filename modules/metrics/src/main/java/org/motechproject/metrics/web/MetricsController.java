@@ -8,6 +8,7 @@ import org.motechproject.metrics.service.MetricRegistryService;
 import org.motechproject.metrics.web.dto.RatioGaugeValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,14 +20,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import static org.motechproject.metrics.security.Roles.HAS_MANAGE_METRICS_ROLE;
+import static org.motechproject.metrics.security.Roles.HAS_VIEW_METRICS_ROLE;
+
 /**
  * Sends details about the currently registered metrics to the user interface.
  */
 @Controller
 public class MetricsController {
-    private final MetricRegistry metricRegistry;
-    private final MetricRegistryService metricRegistryService;
-    private final MetricDtoToSupplierConverter converter;
+    private MetricRegistry metricRegistry;
+    private MetricRegistryService metricRegistryService;
+    private MetricDtoToSupplierConverter converter;
+
+    public MetricsController() {}
 
     @Autowired
     public MetricsController(MetricRegistry metricRegistry,
@@ -53,6 +59,7 @@ public class MetricsController {
      */
     @RequestMapping(value = "/metrics", method = RequestMethod.GET)
     @ResponseBody
+    @PreAuthorize(HAS_VIEW_METRICS_ROLE)
     public List<MetricsDto> getMetrics() {
         List<MetricsDto> ret = new ArrayList<>();
 
@@ -72,6 +79,7 @@ public class MetricsController {
      */
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/metrics/ratioGauge", method = RequestMethod.POST)
+    @PreAuthorize(HAS_MANAGE_METRICS_ROLE)
     public void createRatioGauge(@RequestBody RatioGaugeDto dto) {
         metricRegistryService.registerRatioGauge(dto.getName(),
                 converter.convert(dto.getNumerator()),

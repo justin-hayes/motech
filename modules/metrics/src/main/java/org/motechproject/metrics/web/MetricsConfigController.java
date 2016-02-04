@@ -5,6 +5,7 @@ import org.motechproject.metrics.config.MetricsConfig;
 import org.motechproject.metrics.config.MetricsConfigFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +17,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.motechproject.metrics.security.Roles.HAS_MANAGE_METRICS_ROLE;
+
 /**
  * Sends and receives configuration to and from the user interface.
  */
 @Controller
+@PreAuthorize(HAS_MANAGE_METRICS_ROLE)
 public class MetricsConfigController {
-    private final MetricsConfigFacade metricsConfigFacade;
-    private final MetricRegistryInitializer metricRegistryInitializer;
+    private MetricsConfigFacade metricsConfigFacade;
+    private MetricRegistryInitializer metricRegistryInitializer;
+
+    public MetricsConfigController() {}
 
     @Autowired
     public MetricsConfigController(MetricsConfigFacade metricsConfigFacade,
